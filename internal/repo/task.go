@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"pract2/models"
 	"sync"
 )
@@ -37,7 +38,12 @@ func (r *TaskRepository) GetTaskById(id int) (models.Task, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	return memory[id], nil
+	task, ok := memory[id]
+	if !ok {
+		return models.Task{}, fiber.ErrNotFound
+	}
+
+	return task, nil
 }
 
 func (r *TaskRepository) UpdateTaskById(id int, task models.Task) error {

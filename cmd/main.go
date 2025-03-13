@@ -17,25 +17,33 @@ import (
 )
 
 func main() {
+	// подгрузка env файла
 	if err := godotenv.Load(config.EnvPath); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
+	// помещаем env файл в структуру
 	var cfg config.AppConfig
 	if err := envconfig.Process("", &cfg); err != nil {
 		log.Fatal("Error processing config", zap.Error(err))
 	}
 
+	// добавляем свой логгер
 	logger, err := CustomLogger.NewLogger(cfg.LogLevel)
 	if err != nil {
 		log.Fatal("Error init logger", zap.Error(err))
 	}
 
+	// мьютекс для того чтобы данные были достоверные
 	mu := new(sync.Mutex)
+	// создаем стуктуру репозитория
 	repos := repo.NewRepository(mu)
+	// создаем сервиса репозитория
 	services := service.NewService(repos, logger)
+	// создаем хендлера репозитория
 	app := api.NewRouters(&api.Routers{Service: services}, cfg.Rest.Token)
 
+	//запускаем апи в горутине, чтобы при остановке отработали все задачи в очереди
 	go func() {
 		logger.Infof("Starting server on %s", cfg.Rest.ListenAddress)
 		if err := app.Listen(cfg.Rest.ListenAddress); err != nil {
@@ -43,6 +51,7 @@ func main() {
 		}
 	}()
 
+	// ждем завершение процесса
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
 	<-signalChan

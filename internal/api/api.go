@@ -11,6 +11,8 @@ type Routers struct {
 	Service *service.Service
 }
 
+// создание маршрутов для нашего роутера
+
 func NewRouters(r *Routers, token string) *fiber.App {
 	app := fiber.New()
 
@@ -21,13 +23,13 @@ func NewRouters(r *Routers, token string) *fiber.App {
 		MaxAge:        300,
 	}))
 
-	apiGroup := app.Group("/v1", middleware.Authorization(token))
+	apiGroup := app.Group("/v1", middleware.Authorization(token)) // middleware
 	{
-		apiGroup.Post("/create_task", r.Service.Task.CreateTask)
-		apiGroup.Get("/get_all_tasks", r.Service.Task.GetAllTasks)
-		apiGroup.Get("/get_task/:id", r.Service.Task.GetTaskById)
-		apiGroup.Put("/update_task/:id", r.Service.Task.UpdateTaskById)
-		apiGroup.Delete("/delete_task/:id", r.Service.Task.DeleteTaskById)
+		apiGroup.Post("/create_task", r.Service.Task.CreateTask)           // создание таски
+		apiGroup.Get("/get_all_tasks", r.Service.Task.GetAllTasks)         // взять все таски
+		apiGroup.Get("/get_task/:id", r.Service.Task.GetTaskById)          // взять таску по id
+		apiGroup.Put("/update_task/:id", r.Service.Task.UpdateTaskById)    // обновить таску
+		apiGroup.Delete("/delete_task/:id", r.Service.Task.DeleteTaskById) // удалить таску
 	}
 
 	return app
