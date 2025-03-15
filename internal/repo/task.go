@@ -2,7 +2,7 @@ package repo
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"pract2/models"
+	"pract2/internal/models"
 	"sync"
 )
 

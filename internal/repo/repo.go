@@ -1,9 +1,15 @@
 package repo
 
 import (
-	"pract2/models"
+	"github.com/gofiber/fiber/v2"
+	"pract2/internal/models"
 	"sync"
 )
+
+type User interface {
+	SingUp(ctx *fiber.Ctx) error
+	SingIn(ctx *fiber.Ctx) error
+}
 
 type Task interface {
 	CreateTask(task models.Task) (int, error)
@@ -15,6 +21,7 @@ type Task interface {
 
 type Repository struct {
 	Task Task
+	User User
 }
 
 func NewRepository(mu *sync.Mutex) *Repository {

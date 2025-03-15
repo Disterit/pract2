@@ -4,8 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"pract2/internal/dto"
+	"pract2/internal/models"
 	"pract2/internal/repo"
-	"pract2/models"
 	"strconv"
 )
 

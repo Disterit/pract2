@@ -23,6 +23,10 @@ func NewRouters(r *Routers, token string) *fiber.App {
 		MaxAge:        300,
 	}))
 
+	auth := app.Group("/auth")
+	auth.Post("/sing-up", r.Service.User.SingUp)
+	auth.Get("/sing-in", r.Service.User.SingIn)
+
 	apiGroup := app.Group("/v1", middleware.Authorization(token)) // middleware
 	{
 		apiGroup.Post("/create_task", r.Service.Task.CreateTask)           // создание таски

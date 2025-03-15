@@ -6,6 +6,11 @@ import (
 	"pract2/internal/repo"
 )
 
+type User interface {
+	SingUp(ctx *fiber.Ctx) error
+	SingIn(ctx *fiber.Ctx) error
+}
+
 type Task interface {
 	CreateTask(ctx *fiber.Ctx) error
 	GetAllTasks(ctx *fiber.Ctx) error
@@ -16,10 +21,12 @@ type Task interface {
 
 type Service struct {
 	Task Task
+	User User
 }
 
 func NewService(repo *repo.Repository, logger *zap.SugaredLogger) *Service {
 	return &Service{
 		Task: NewTaskService(repo.Task, logger),
+		User: NewUserService(repo.User, logger),
 	}
 }
