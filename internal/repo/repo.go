@@ -1,14 +1,14 @@
 package repo
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"context"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"pract2/internal/models"
-	"sync"
 )
 
 type User interface {
-	SingUp(ctx *fiber.Ctx) error
-	SingIn(ctx *fiber.Ctx) error
+	SingUp(ctx context.Context, username, password string) error
+	SingIn(ctx context.Context, username string) (models.User, error)
 }
 
 type Task interface {
@@ -24,8 +24,9 @@ type Repository struct {
 	User User
 }
 
-func NewRepository(mu *sync.Mutex) *Repository {
+func NewRepository(pool *pgxpool.Pool) *Repository {
 	return &Repository{
-		Task: NewTaskRepository(mu),
+		Task: NewTaskRepository(pool),
+		User: NewUserRepository(pool),
 	}
 }

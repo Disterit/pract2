@@ -21,6 +21,10 @@ func NewTaskService(repo repo.Task, logger *zap.SugaredLogger) *TaskService {
 func (s *TaskService) CreateTask(ctx *fiber.Ctx) error {
 	var input models.Task
 
+	userId := ctx.Locals("user_id").(string)
+	userIdInt, _ := strconv.Atoi(userId)
+	input.UserId = userIdInt
+
 	if err := ctx.BodyParser(&input); err != nil {
 		s.logger.Errorw("error parsing body", "error", err)
 		return dto.BadResponseError(ctx, dto.FieldIncorrect, "Invalid request body")

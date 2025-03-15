@@ -11,6 +11,8 @@ const (
 	FieldIncorrect     = "FIELD_INCORRECT"
 	ServiceUnavailable = "SERVICE_UNAVAILABLE"
 	InternalError      = "Service is currently unavailable. Please try again later."
+	NotAuthenticated   = "Not authenticated"
+	AuthorizationError = "Authorization Error"
 )
 
 type Response struct {
@@ -30,6 +32,16 @@ func BadResponseError(ctx *fiber.Ctx, code, desc string) error {
 		Error: &Error{
 			Code: code,
 			Desc: desc,
+		},
+	})
+}
+
+func UnauthorizedError(ctx *fiber.Ctx) error {
+	return ctx.Status(fiber.StatusUnauthorized).JSON(Response{
+		Status: "error",
+		Error: &Error{
+			Code: NotAuthenticated,
+			Desc: AuthorizationError,
 		},
 	})
 }

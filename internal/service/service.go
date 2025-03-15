@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+	"pract2/internal/config"
 	"pract2/internal/repo"
 )
 
@@ -24,9 +25,9 @@ type Service struct {
 	User User
 }
 
-func NewService(repo *repo.Repository, logger *zap.SugaredLogger) *Service {
+func NewService(repo *repo.Repository, logger *zap.SugaredLogger, cfg config.Service) *Service {
 	return &Service{
 		Task: NewTaskService(repo.Task, logger),
-		User: NewUserService(repo.User, logger),
+		User: NewUserService(repo.User, logger, cfg),
 	}
 }

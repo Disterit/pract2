@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/pkg/errors"
@@ -13,7 +14,6 @@ import (
 	CustomLogger "pract2/internal/logger"
 	"pract2/internal/repo"
 	"pract2/internal/service"
-	"sync"
 )
 
 func main() {
@@ -34,12 +34,20 @@ func main() {
 		log.Fatal("Error init logger", zap.Error(err))
 	}
 
-	// мьютекс для того чтобы данные были достоверные
-	mu := new(sync.Mutex)
+	pool, err := repo.Connection(context.Background(), cfg.PostgresDB)
+	if err != nil {
+		log.Fatal("Error connect to database", zap.Error(err))
+	}
+
+	// прооверка соединения с бд
+	if err := repo.CheckConnection(pool, logger); err != nil {
+		log.Fatalf("Connection check failed: %v", err)
+	}
+
 	// создаем стуктуру репозитория
-	repos := repo.NewRepository(mu)
+	repos := repo.NewRepository(pool)
 	// создаем сервиса репозитория
-	services := service.NewService(repos, logger)
+	services := service.NewService(repos, logger, cfg.Service)
 	// создаем хендлера репозитория
 	app := api.NewRouters(&api.Routers{Service: services}, cfg.Rest.Token)
 
