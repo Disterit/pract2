@@ -18,3 +18,24 @@
 Пройдусь по memory repo, понимаю что проект маленький и мьютекс тут не нужен, но думаю это более правильная практика, потому что кто будет работать с данными будут получать их последнею версию
 
 Ну и да local.env добавлять в репо не нужно, добавил для вас.
+
+
+Структуры для задания я взял из задания.
+
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY, -- Уникальный ключ с автоинкрементом
+    username VARCHAR(255) UNIQUE NOT NULL, -- Уникальное имя пользователя (лучше VARCHAR(255), чем TEXT, для индексации)
+    password VARCHAR(255) NOT NULL, -- Хранится хэш пароля (bcrypt)
+    created_at TIMESTAMP DEFAULT now() -- Дата и время регистрации пользователя
+);
+
+CREATE TABLE IF NOT EXISTS tasks (
+   id SERIAL PRIMARY KEY, -- Уникальный ключ с автоинкрементом
+   user_id INT REFERENCES users(id) ON DELETE CASCADE, -- Внешний ключ, при удалении пользователя удаляются его задания
+   title VARCHAR(255) NOT NULL, -- Название задачи (VARCHAR(255) вместо TEXT для оптимизации индексации)
+   description TEXT, -- Описание задачи, можно длинный текст
+   status VARCHAR(20) CHECK (status IN ('new', 'in_progress', 'done')) DEFAULT 'new', -- Ограничение на статус задачи
+   created_at TIMESTAMP DEFAULT now() -- Дата и время создания задачи
+);
+
