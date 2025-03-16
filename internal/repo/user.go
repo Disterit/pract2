@@ -10,6 +10,7 @@ import (
 const (
 	SingUpUserQuery   = `INSERT INTO users(username, password) VALUES ($1, $2);`
 	IdentityUserQuery = `SELECT * FROM users WHERE username = $1;`
+	DeleteUserQuery   = `DELETE FROM users WHERE id = $1;`
 )
 
 type UserRepository struct {
@@ -38,4 +39,12 @@ func (r *UserRepository) SingIn(ctx context.Context, username string) (models.Us
 	}
 
 	return user, nil
+}
+
+func (r *UserRepository) DeleteUser(ctx context.Context, id int) error {
+	_, err := r.pool.Exec(ctx, DeleteUserQuery, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

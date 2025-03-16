@@ -56,6 +56,12 @@ func (s *UserService) SingUp(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
+type CustomClaims struct {
+	jwt.RegisteredClaims
+	UserId   int    `json:"user_id"`
+	Username string `json:"username"`
+}
+
 func (s *UserService) SingIn(ctx *fiber.Ctx) error {
 	var input models.User
 
@@ -76,10 +82,16 @@ func (s *UserService) SingIn(ctx *fiber.Ctx) error {
 		return dto.BadResponseError(ctx, dto.FieldBadFormat, err.Error())
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		Subject:   strconv.Itoa(user.Id),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-	})
+	claims := CustomClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   strconv.Itoa(user.Id),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+		},
+		UserId:   user.Id,
+		Username: input.Username,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString([]byte(s.JWTSecret))
 	if err != nil {
@@ -90,6 +102,26 @@ func (s *UserService) SingIn(ctx *fiber.Ctx) error {
 	response := dto.Response{
 		Status: "success",
 		Data:   tokenString,
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+func (s *UserService) DeleteUser(ctx *fiber.Ctx) error {
+	id, err := strconv.Atoi(ctx.Params("id"))
+	if err != nil {
+		s.logger.Errorw("Error parsing id", "error", err)
+		return dto.BadResponseError(ctx, dto.FieldBadFormat, err.Error())
+	}
+
+	err = s.repo.DeleteUser(ctx.Context(), id)
+	if err != nil {
+		s.logger.Errorw("Error deleting user", "error", err)
+		return dto.InternalServerError(ctx)
+	}
+
+	response := dto.Response{
+		Status: "success",
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)

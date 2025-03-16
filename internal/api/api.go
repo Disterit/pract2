@@ -23,6 +23,8 @@ func NewRouters(r *Routers, token string) *fiber.App {
 		MaxAge:        300,
 	}))
 
+	app.Delete("/deleteUser/:id", r.Service.User.DeleteUser)
+
 	auth := app.Group("/auth")
 	auth.Post("/sing-up", r.Service.User.SingUp)
 	auth.Get("/sing-in", r.Service.User.SingIn)

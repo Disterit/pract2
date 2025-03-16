@@ -9,14 +9,15 @@ import (
 type User interface {
 	SingUp(ctx context.Context, username, password string) error
 	SingIn(ctx context.Context, username string) (models.User, error)
+	DeleteUser(ctx context.Context, id int) error
 }
 
 type Task interface {
-	CreateTask(task models.Task) (int, error)
-	GetAllTasks() (map[int]models.Task, error)
-	GetTaskById(id int) (models.Task, error)
-	UpdateTaskById(id int, task models.Task) error
-	DeleteTaskById(id int) error
+	CreateTask(ctx context.Context, task models.Task) (int, error)
+	GetAllTasks(ctx context.Context, username string) ([]models.Task, error)
+	GetTaskById(ctx context.Context, taskId int) (models.Task, error)
+	UpdateTaskById(ctx context.Context, status string, taskId, userId int) error
+	DeleteTaskById(ctx context.Context, taskId, userId int) error
 }
 
 type Repository struct {

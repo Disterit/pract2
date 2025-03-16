@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+type CustomClaims struct {
+	jwt.RegisteredClaims
+	UserID   int    `json:"user_id"`
+	Username string `json:"username"`
+}
+
 // будущее middleware
 
 func Authorization(jwtToken string) fiber.Handler {
@@ -22,8 +28,8 @@ func Authorization(jwtToken string) fiber.Handler {
 			return dto.UnauthorizedError(ctx)
 		}
 
-		claims := jwt.RegisteredClaims{}
-		token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
+		claims := &CustomClaims{}
+		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(jwtToken), nil
 		})
 
@@ -31,7 +37,8 @@ func Authorization(jwtToken string) fiber.Handler {
 			return dto.UnauthorizedError(ctx)
 		}
 
-		ctx.Locals("user_id", claims.Subject)
+		ctx.Locals("user_id", claims.UserID)
+		ctx.Locals("username", claims.Username)
 
 		return ctx.Next()
 	}

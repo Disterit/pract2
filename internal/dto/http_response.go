@@ -13,6 +13,8 @@ const (
 	InternalError      = "Service is currently unavailable. Please try again later."
 	NotAuthenticated   = "Not authenticated"
 	AuthorizationError = "Authorization Error"
+	Forbidden          = "You are not authorized to perform this action."
+	NotFound           = "Not found"
 )
 
 type Response struct {
@@ -32,6 +34,26 @@ func BadResponseError(ctx *fiber.Ctx, code, desc string) error {
 		Error: &Error{
 			Code: code,
 			Desc: desc,
+		},
+	})
+}
+
+func NotFoundError(ctx *fiber.Ctx) error {
+	return ctx.Status(fiber.StatusNotFound).JSON(Response{
+		Status: "error",
+		Error: &Error{
+			Code: FieldIncorrect,
+			Desc: NotFound,
+		},
+	})
+}
+
+func ForbiddenError(ctx *fiber.Ctx) error {
+	return ctx.Status(fiber.StatusForbidden).JSON(Response{
+		Status: "error",
+		Error: &Error{
+			Code: AuthorizationError,
+			Desc: Forbidden,
 		},
 	})
 }

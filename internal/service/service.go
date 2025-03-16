@@ -10,6 +10,7 @@ import (
 type User interface {
 	SingUp(ctx *fiber.Ctx) error
 	SingIn(ctx *fiber.Ctx) error
+	DeleteUser(ctx *fiber.Ctx) error
 }
 
 type Task interface {
