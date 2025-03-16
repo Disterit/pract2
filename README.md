@@ -22,7 +22,9 @@
 
 Структуры для задания я взял из задания.
 
-`
+## Структура базы данных
+
+```sql
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY, -- Уникальный ключ с автоинкрементом
     username VARCHAR(255) UNIQUE NOT NULL, -- Уникальное имя пользователя (лучше VARCHAR(255), чем TEXT, для индексации)
@@ -38,4 +40,4 @@ CREATE TABLE IF NOT EXISTS tasks (
    status VARCHAR(20) CHECK (status IN ('new', 'in_progress', 'done')) DEFAULT 'new', -- Ограничение на статус задачи
    created_at TIMESTAMP DEFAULT now() -- Дата и время создания задачи
 );
-`
+
