@@ -120,13 +120,9 @@ func (s *UserService) SingIn(ctx *fiber.Ctx) error {
 
 // эта функция без middleware, просто функция для удаления пользователя по тз с ON DELETE CASCADE
 func (s *UserService) DeleteUser(ctx *fiber.Ctx) error {
-	id, err := strconv.Atoi(ctx.Params("id"))
-	if err != nil {
-		s.logger.Errorw("Error parsing id", "error", err)
-		return dto.BadResponseError(ctx, dto.FieldBadFormat, err.Error())
-	}
+	id := ctx.Locals("user_id").(int)
 
-	err = s.repo.DeleteUser(ctx.Context(), id)
+	err := s.repo.DeleteUser(ctx.Context(), id)
 	if err != nil {
 		s.logger.Errorw("Error deleting user", "error", err)
 		return dto.InternalServerError(ctx)

@@ -23,8 +23,6 @@ func NewRouters(r *Routers, token string) *fiber.App {
 		MaxAge:        300,
 	}))
 
-	app.Delete("/deleteUser/:id", r.Service.User.DeleteUser)
-
 	auth := app.Group("/auth")
 	auth.Post("/sing-up", r.Service.User.SingUp)
 	auth.Get("/sing-in", r.Service.User.SingIn)
@@ -36,6 +34,7 @@ func NewRouters(r *Routers, token string) *fiber.App {
 		apiGroup.Get("/get_task/:id", r.Service.Task.GetTaskById)          // взять таску по id
 		apiGroup.Put("/update_task/:id", r.Service.Task.UpdateTaskById)    // обновить таску
 		apiGroup.Delete("/delete_task/:id", r.Service.Task.DeleteTaskById) // удалить таску
+		apiGroup.Delete("/deleteUser", r.Service.User.DeleteUser)          // пользователь удаляет сам себя
 	}
 
 	return app
