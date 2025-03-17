@@ -45,7 +45,7 @@ func main() {
 		log.Fatalf("Connection check failed: %v", err)
 	}
 
-	// создаем стуктуру репозитория
+	// создаем интерфейс репозитория
 	repos := repo.NewRepository(pool)
 	// создаем сервиса репозитория
 	services := service.NewService(repos, logger, cfg.Service)
