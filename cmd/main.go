@@ -66,4 +66,14 @@ func main() {
 	<-signalChan
 
 	logger.Info("Shutting down server...")
+
+	if err = app.Shutdown(); err != nil {
+		logger.Errorw("error shutting down server", zap.Error(err))
+	}
+
+	if err = repo.CloseConnection(pool); err != nil {
+		logger.Errorw("error closing connection", zap.Error(err))
+	}
+
+	logger.Info("Server stopped")
 }
