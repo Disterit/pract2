@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+
 	// подгрузка env файла
 	if err := godotenv.Load(config.EnvPath); err != nil {
 		log.Fatal("Error loading .env file")
