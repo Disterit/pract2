@@ -20,12 +20,25 @@ type Task interface {
 	DeleteTaskById(ctx context.Context, taskId, userId int) error
 }
 
+type IRepository interface {
+	GetTaskRepo() Task
+	GetUserRepo() User
+}
+
 type Repository struct {
 	Task Task
 	User User
 }
 
-func NewRepository(pool *pgxpool.Pool) *Repository {
+func (r *Repository) GetTaskRepo() Task {
+	return r.Task
+}
+
+func (r *Repository) GetUserRepo() User {
+	return r.User
+}
+
+func NewRepository(pool *pgxpool.Pool) IRepository {
 	return &Repository{
 		Task: NewTaskRepository(pool),
 		User: NewUserRepository(pool),

@@ -49,3 +49,11 @@ func CheckConnection(pool *pgxpool.Pool, logger *zap.SugaredLogger) error {
 	logger.Info("Database connection is successful")
 	return nil
 }
+
+func CloseConnection(pool *pgxpool.Pool) error {
+	if pool != nil {
+		pool.Close()
+		return nil
+	}
+	return errors.New("database connection is nil")
+}

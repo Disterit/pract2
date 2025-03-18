@@ -27,7 +27,7 @@ func (s *TaskService) CreateTask(ctx *fiber.Ctx) error {
 
 	if err := ctx.BodyParser(&input); err != nil {
 		s.logger.Errorw("error parsing body", "error", err)
-		return dto.BadResponseError(ctx, dto.FieldIncorrect, "Invalid request body")
+		return dto.BadResponseError(ctx, dto.FieldIncorrect, "error")
 	}
 
 	taskID, err := s.repo.CreateTask(ctx.Context(), input)
@@ -70,14 +70,14 @@ func (s *TaskService) GetTaskById(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		s.logger.Errorw("error getting task by id", "error", err)
-		return dto.BadResponseError(ctx, dto.FieldBadFormat, "invalid id")
+		return dto.BadResponseError(ctx, dto.FieldBadFormat, "error")
 	}
 
 	task, err := s.repo.GetTaskById(ctx.Context(), id)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			s.logger.Errorw("error getting task by id", "error", err)
-			return dto.NotFoundError(ctx)
+			return dto.BadResponseError(ctx, dto.FieldBadFormat, "error")
 		}
 		s.logger.Errorw("error getting task by id", "error", err)
 		return dto.InternalServerError(ctx)
@@ -85,7 +85,7 @@ func (s *TaskService) GetTaskById(ctx *fiber.Ctx) error {
 
 	if task.UserId != userId {
 		s.logger.Errorw("error no rights", "error", err)
-		return dto.ForbiddenError(ctx)
+		return dto.NotFoundError(ctx)
 	}
 
 	response := dto.Response{
@@ -103,13 +103,13 @@ func (s *TaskService) UpdateTaskById(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		s.logger.Errorw("error getting task by id", "error", err)
-		return dto.BadResponseError(ctx, dto.FieldBadFormat, "invalid id")
+		return dto.BadResponseError(ctx, dto.FieldBadFormat, "error")
 	}
 
 	var input models.Task
 	if err := ctx.BodyParser(&input); err != nil {
 		s.logger.Errorw("error parsing body", "error", err)
-		return dto.BadResponseError(ctx, dto.FieldIncorrect, "invalid body")
+		return dto.BadResponseError(ctx, dto.FieldIncorrect, "error")
 	}
 
 	err = s.repo.UpdateTaskById(ctx.Context(), input.Status, id, userId)
@@ -132,7 +132,7 @@ func (s *TaskService) DeleteTaskById(ctx *fiber.Ctx) error {
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
 		s.logger.Errorw("error getting task by id", "error", err)
-		return dto.BadResponseError(ctx, dto.FieldBadFormat, "invalid id")
+		return dto.BadResponseError(ctx, dto.FieldBadFormat, "error")
 	}
 
 	err = s.repo.DeleteTaskById(ctx.Context(), id, userId)

@@ -18,7 +18,7 @@ type TaskRepository struct {
 	pool *pgxpool.Pool
 }
 
-func NewTaskRepository(pool *pgxpool.Pool) *TaskRepository {
+func NewTaskRepository(pool *pgxpool.Pool) Task {
 	return &TaskRepository{pool: pool}
 }
 

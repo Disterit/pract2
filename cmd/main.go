@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+
 	// подгрузка env файла
 	if err := godotenv.Load(config.EnvPath); err != nil {
 		log.Fatal("Error loading .env file")
@@ -44,7 +45,7 @@ func main() {
 		log.Fatalf("Connection check failed: %v", err)
 	}
 
-	// создаем стуктуру репозитория
+	// создаем интерфейс репозитория
 	repos := repo.NewRepository(pool)
 	// создаем сервиса репозитория
 	services := service.NewService(repos, logger, cfg.Service)
@@ -65,4 +66,14 @@ func main() {
 	<-signalChan
 
 	logger.Info("Shutting down server...")
+
+	if err = app.Shutdown(); err != nil {
+		logger.Errorw("error shutting down server", zap.Error(err))
+	}
+
+	if err = repo.CloseConnection(pool); err != nil {
+		logger.Errorw("error closing connection", zap.Error(err))
+	}
+
+	logger.Info("Server stopped")
 }
