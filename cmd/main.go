@@ -56,7 +56,7 @@ func main() {
 	taskService := service.NewTaskService(repos.Task, logger)
 	userService := service.NewUserService(repos.User, logger, cfg.Service)
 
-	// создаем сервиса репозитория
+	// создаем интерфейс сервиса
 	services := service.NewService(taskService, userService)
 
 	// создаем хендлера репозитория
