@@ -45,10 +45,20 @@ func main() {
 		log.Fatalf("Connection check failed: %v", err)
 	}
 
+	// создаём интерфейсы для репозитория
+	taskRepository := repo.NewTaskRepository(pool)
+	userRepository := repo.NewUserRepository(pool)
+
 	// создаем интерфейс репозитория
-	repos := repo.NewRepository(pool)
+	repos := repo.NewRepository(taskRepository, userRepository)
+
+	// создаём интерфейсы для сервиса
+	taskService := service.NewTaskService(repos.Task, logger)
+	userService := service.NewUserService(repos.User, logger, cfg.Service)
+
 	// создаем сервиса репозитория
-	services := service.NewService(repos, logger, cfg.Service)
+	services := service.NewService(taskService, userService)
+
 	// создаем хендлера репозитория
 	app := api.NewRouters(&api.Routers{Service: services}, cfg.Rest.Token)
 

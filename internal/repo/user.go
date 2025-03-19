@@ -13,15 +13,15 @@ const (
 	DeleteUserQuery   = `DELETE FROM users WHERE id = $1;`
 )
 
-type UserRepository struct {
+type userRepository struct {
 	pool *pgxpool.Pool
 }
 
-func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
-	return &UserRepository{pool: pool}
+func NewUserRepository(pool *pgxpool.Pool) User {
+	return &userRepository{pool}
 }
 
-func (r *UserRepository) SingUp(ctx context.Context, username, password string) error {
+func (r *userRepository) SingUp(ctx context.Context, username, password string) error {
 	cmdTag, err := r.pool.Exec(ctx, SingUpUserQuery, username, password)
 	fmt.Println(cmdTag)
 	if err != nil {
@@ -30,7 +30,7 @@ func (r *UserRepository) SingUp(ctx context.Context, username, password string) 
 	return nil
 }
 
-func (r *UserRepository) SingIn(ctx context.Context, username string) (models.User, error) {
+func (r *userRepository) SingIn(ctx context.Context, username string) (models.User, error) {
 	row := r.pool.QueryRow(ctx, IdentityUserQuery, username)
 	var user models.User
 	err := row.Scan(&user.Id, &user.Username, &user.Password, &user.CreatedAt)
@@ -41,7 +41,7 @@ func (r *UserRepository) SingIn(ctx context.Context, username string) (models.Us
 	return user, nil
 }
 
-func (r *UserRepository) DeleteUser(ctx context.Context, id int) error {
+func (r *userRepository) DeleteUser(ctx context.Context, id int) error {
 	_, err := r.pool.Exec(ctx, DeleteUserQuery, id)
 	if err != nil {
 		return err
