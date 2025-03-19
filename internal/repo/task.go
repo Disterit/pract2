@@ -14,15 +14,15 @@ const (
 	DeleteTaskById   = `DELETE FROM tasks WHERE id = $1 AND user_id = $2`
 )
 
-type TaskRepository struct {
+type taskRepository struct {
 	pool *pgxpool.Pool
 }
 
 func NewTaskRepository(pool *pgxpool.Pool) Task {
-	return &TaskRepository{pool: pool}
+	return &taskRepository{pool}
 }
 
-func (r *TaskRepository) CreateTask(ctx context.Context, task models.Task) (int, error) {
+func (r *taskRepository) CreateTask(ctx context.Context, task models.Task) (int, error) {
 	var id int
 	err := r.pool.QueryRow(ctx, CreateTaskQuery, task.UserId, task.Title, task.Description).Scan(&id)
 	if err != nil {
@@ -31,7 +31,7 @@ func (r *TaskRepository) CreateTask(ctx context.Context, task models.Task) (int,
 	return id, nil
 }
 
-func (r *TaskRepository) GetAllTasks(ctx context.Context, username string) ([]models.Task, error) {
+func (r *taskRepository) GetAllTasks(ctx context.Context, username string) ([]models.Task, error) {
 
 	var tasks []models.Task
 
@@ -51,7 +51,7 @@ func (r *TaskRepository) GetAllTasks(ctx context.Context, username string) ([]mo
 	return tasks, nil
 }
 
-func (r *TaskRepository) GetTaskById(ctx context.Context, taskId int) (models.Task, error) {
+func (r *taskRepository) GetTaskById(ctx context.Context, taskId int) (models.Task, error) {
 	row := r.pool.QueryRow(ctx, GetTaskByIdQuery, taskId)
 	var task models.Task
 	err := row.Scan(&task.Id, &task.UserId, &task.Title, &task.Description, &task.Status, &task.CreatedAt)
@@ -61,7 +61,7 @@ func (r *TaskRepository) GetTaskById(ctx context.Context, taskId int) (models.Ta
 	return task, nil
 }
 
-func (r *TaskRepository) UpdateTaskById(ctx context.Context, status string, taskId, userId int) error {
+func (r *taskRepository) UpdateTaskById(ctx context.Context, status string, taskId, userId int) error {
 	_, err := r.pool.Exec(ctx, UpdateTaskById, status, taskId, userId)
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func (r *TaskRepository) UpdateTaskById(ctx context.Context, status string, task
 	return nil
 }
 
-func (r *TaskRepository) DeleteTaskById(ctx context.Context, taskId, userId int) error {
+func (r *taskRepository) DeleteTaskById(ctx context.Context, taskId, userId int) error {
 	_, err := r.pool.Exec(ctx, DeleteTaskById, taskId, userId)
 	if err != nil {
 		return err

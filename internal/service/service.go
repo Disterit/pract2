@@ -2,9 +2,6 @@ package service
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"go.uber.org/zap"
-	"pract2/internal/config"
-	"pract2/internal/repo"
 )
 
 type User interface {
@@ -21,27 +18,14 @@ type Task interface {
 	DeleteTaskById(ctx *fiber.Ctx) error
 }
 
-type IService interface {
-	GetTaskService() Task
-	GetUserService() User
-}
-
 type Service struct {
 	Task Task
 	User User
 }
 
-func (s *Service) GetTaskService() Task {
-	return s.Task
-}
-
-func (s *Service) GetUserService() User {
-	return s.User
-}
-
-func NewService(repo repo.IRepository, logger *zap.SugaredLogger, cfg config.Service) IService {
+func NewService(task Task, user User) *Service {
 	return &Service{
-		Task: NewTaskService(repo.GetTaskRepo(), logger),
-		User: NewUserService(repo.GetUserRepo(), logger, cfg),
+		Task: task,
+		User: user,
 	}
 }

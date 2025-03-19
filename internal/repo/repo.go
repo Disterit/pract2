@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"pract2/internal/models"
 )
 
@@ -20,27 +19,14 @@ type Task interface {
 	DeleteTaskById(ctx context.Context, taskId, userId int) error
 }
 
-type IRepository interface {
-	GetTaskRepo() Task
-	GetUserRepo() User
-}
-
 type Repository struct {
 	Task Task
 	User User
 }
 
-func (r *Repository) GetTaskRepo() Task {
-	return r.Task
-}
-
-func (r *Repository) GetUserRepo() User {
-	return r.User
-}
-
-func NewRepository(pool *pgxpool.Pool) IRepository {
+func NewRepository(task Task, user User) *Repository {
 	return &Repository{
-		Task: NewTaskRepository(pool),
-		User: NewUserRepository(pool),
+		Task: task,
+		User: user,
 	}
 }

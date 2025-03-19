@@ -10,16 +10,19 @@ import (
 	"strconv"
 )
 
-type TaskService struct {
+type taskService struct {
 	repo   repo.Task
 	logger *zap.SugaredLogger
 }
 
-func NewTaskService(repo repo.Task, logger *zap.SugaredLogger) *TaskService {
-	return &TaskService{repo: repo, logger: logger}
+func NewTaskService(repo repo.Task, logger *zap.SugaredLogger) Task {
+	return &taskService{
+		repo:   repo,
+		logger: logger,
+	}
 }
 
-func (s *TaskService) CreateTask(ctx *fiber.Ctx) error {
+func (s *taskService) CreateTask(ctx *fiber.Ctx) error {
 	var input models.Task
 
 	userId := ctx.Locals("user_id").(int)
@@ -44,7 +47,7 @@ func (s *TaskService) CreateTask(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
-func (s *TaskService) GetAllTasks(ctx *fiber.Ctx) error {
+func (s *taskService) GetAllTasks(ctx *fiber.Ctx) error {
 
 	username := ctx.Locals("username").(string)
 
@@ -63,7 +66,7 @@ func (s *TaskService) GetAllTasks(ctx *fiber.Ctx) error {
 }
 
 // тут я просто написал по тз, но вообще не нужно делать проверку ради проверки объясню в readme
-func (s *TaskService) GetTaskById(ctx *fiber.Ctx) error {
+func (s *taskService) GetTaskById(ctx *fiber.Ctx) error {
 
 	userId := ctx.Locals("user_id").(int)
 
@@ -96,7 +99,7 @@ func (s *TaskService) GetTaskById(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
-func (s *TaskService) UpdateTaskById(ctx *fiber.Ctx) error {
+func (s *taskService) UpdateTaskById(ctx *fiber.Ctx) error {
 
 	userId := ctx.Locals("user_id").(int)
 
@@ -125,7 +128,7 @@ func (s *TaskService) UpdateTaskById(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
-func (s *TaskService) DeleteTaskById(ctx *fiber.Ctx) error {
+func (s *taskService) DeleteTaskById(ctx *fiber.Ctx) error {
 
 	userId := ctx.Locals("user_id").(int)
 

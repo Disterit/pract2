@@ -20,7 +20,7 @@ type UserService struct {
 	JWTSecret    string
 }
 
-func NewUserService(repo repo.User, logger *zap.SugaredLogger, cfg config.Service) *UserService {
+func NewUserService(repo repo.User, logger *zap.SugaredLogger, cfg config.Service) User {
 	return &UserService{
 		repo:         repo,
 		logger:       logger,
